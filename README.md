@@ -1,26 +1,34 @@
-SentinelAI Enterprise Edition
+# SentinelAI Enterprise Edition 🛡️  
 
-Production-Grade Insider Threat Detection Platform
+**Production-Grade Insider Threat Detection Platform**
 
-SentinelAI is an enterprise-grade security monitoring system designed to detect insider threats, suspicious workstation behavior, and policy violations in real time.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)  
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)  
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)  
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-blue.svg)](https://www.postgresql.org/)  
+[![FastAPI](https://img.shields.io/badge/FastAPI-Backend-teal.svg)](https://fastapi.tiangolo.com/)  
+[![React](https://img.shields.io/badge/React-SOC%20Dashboard-61dafb.svg)](https://react.dev/)
 
-The platform combines:
+SentinelAI is an **enterprise-grade security monitoring system** designed to detect **insider threats, suspicious workstation behavior, and policy violations in real time**—helping organizations identify malicious insider activity **before data exfiltration occurs**.
 
-Windows endpoint agents
+---
 
-A FastAPI backend
+## ✨ Key Capabilities
 
-PostgreSQL analytics storage
+- **Windows Endpoint Agents**: lightweight, behavior-focused monitoring (no full disk scans)
+- **FastAPI Backend**: secure APIs, authentication, RBAC, and event ingestion
+- **PostgreSQL Analytics Store**: structured storage for events, violations, alerts, and reports
+- **SOC Dashboard (React + Vite)**: overview, employees, trends, alerts, reports, admin panel
+- **Real-Time WebSocket Alerts**: instant risk updates and incident notifications
+- **Automated Risk Scoring & Threat Detection**: weighted violation scoring with **daily decay**
+- **Event Deduplication**: same event within **5 minutes** counted once
+- **Token Separation**: distinct validation paths for **user tokens** vs **agent tokens**
 
-A SOC (Security Operations Center) dashboard
+---
 
-Real-time WebSocket alerts
+## 🧩 System Architecture
 
-Automated risk scoring and threat detection
-
-SentinelAI is designed to help organizations identify malicious insider behavior before data exfiltration occurs.
-
-System Architecture
+```
 ┌──────────────────────────────────────────────────────────────┐
 │                    SentinelAI Architecture                    │
 ├──────────────┬───────────────────────┬────────────────────────┤
@@ -35,15 +43,26 @@ System Architecture
 │ • Ports      │ Report Generator      │ Admin Panel            │
 │ • Logins     │ WebSocket Broadcast   │                        │
 └──────────────┴───────────────────────┴────────────────────────┘
-Key Design Principles
-Principle	Implementation
-Event-Driven	Agents send events only when violations occur
-Risk Decay	Risk scores automatically decay by 20% per day
-Dedup Protection	Same event within 5 minutes counted once
-Token Separation	Agent tokens and user tokens use different validation paths
-RBAC Security	Admin → Analyst → Viewer permission hierarchy
-Lightweight Agents	Only monitors configured behaviors, no full disk scans
-Project Structure
+```
+
+---
+
+## 📐 Key Design Principles
+
+| Principle | Implementation |
+|---|---|
+| **Event-Driven** | Agents send events only when violations occur |
+| **Risk Decay** | Risk scores automatically decay by **20% per day** |
+| **Dedup Protection** | Same event within **5 minutes** counted once |
+| **Token Separation** | Agent tokens and user tokens use different validation paths |
+| **RBAC Security** | **Admin → Analyst → Viewer** permission hierarchy |
+| **Lightweight Agents** | Only monitors configured behaviors; no full disk scans |
+
+---
+
+## 📁 Project Structure
+
+```
 sentinelai/
 │
 ├── agent/
@@ -93,162 +112,159 @@ sentinelai/
 │
 ├── .env.example
 └── README.md
-Quick Start Deployment
-Prerequisites
+```
 
-Python 3.11+
+---
 
-Node.js 18+
+## 🚀 Quick Start Deployment
 
-PostgreSQL 14+
+### ✅ Prerequisites
 
-Docker (optional)
+- **Python 3.11+**
+- **Node.js 18+**
+- **PostgreSQL 14+**
+- **Docker (optional)**
+- **Windows system** (for the endpoint agent)
 
-Windows system (for agent)
+---
 
-Step 1 — PostgreSQL Setup
-Docker (Recommended)
+### 1) 🗄️ PostgreSQL Setup
+
+**Docker (recommended):**
+```bash
 docker run -d \
---name sentinelai-pg \
--e POSTGRES_USER=sentinel \
--e POSTGRES_PASSWORD=sentinel_pass \
--e POSTGRES_DB=sentinelai \
--p 5432:5432 \
-postgres:16-alpine
-Native PostgreSQL
+  --name sentinelai-pg \
+  -e POSTGRES_USER=sentinel \
+  -e POSTGRES_PASSWORD=sentinel_pass \
+  -e POSTGRES_DB=sentinelai \
+  -p 5432:5432 \
+  postgres:16-alpine
+```
+
+**Native PostgreSQL:**
+```sql
 CREATE USER sentinel WITH PASSWORD 'sentinel_pass';
-
 CREATE DATABASE sentinelai OWNER sentinel;
-
 GRANT ALL PRIVILEGES ON DATABASE sentinelai TO sentinel;
-Step 2 — Backend Setup
+```
 
-Navigate to the project root:
+---
 
+### 2) 🧠 Backend Setup
+
+```bash
 cd sentinelai
 
-Create virtual environment:
-
+# Create virtual environment
 python -m venv venv
 
-Activate environment:
-
-Linux / Mac
-
+# Activate environment
+# Linux / macOS
 source venv/bin/activate
-
-Windows
-
+# Windows
 venv\Scripts\activate
 
-Install dependencies
-
+# Install dependencies
 pip install -r backend/requirements.txt
 
-Copy environment configuration
-
+# Configure environment
 cp .env.example .env
 
-Generate a secure JWT key:
-
+# Generate secure JWT key
 python -c "import secrets; print(secrets.token_hex(32))"
 
-Add it to .env
+# Add to .env
+# JWT_SECRET_KEY=<generated_key>
 
-JWT_SECRET_KEY=<generated_key>
-
-Start backend server:
-
-Development:
-
+# Start backend
+# Development
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 
-Production:
-
+# Production
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 4
-Step 3 — Seed Admin Account
+```
+
+---
+
+### 3) 👤 Seed Admin Account
 
 Run once after backend startup:
 
+```bash
 curl -X POST http://localhost:8000/api/auth/seed-admin
+```
 
-Default credentials:
+**Default credentials:**
+- **Username:** `admin`  
+- **Password:** `SentinelAdmin2024!`  
 
-Username: admin
-Password: SentinelAdmin2024!
-Step 4 — Dashboard Setup
+> ⚠️ **Change these immediately in production.**
 
-Navigate to dashboard directory
+---
 
+### 4) 🖥️ SOC Dashboard Setup
+
+```bash
 cd sentinelai/dashboard
 
-Install dependencies
-
+# Install dependencies
 npm install
 
-Run development server
-
+# Run dev server
 npm run dev
+```
 
-Dashboard will be available at
+- Dev: **http://localhost:5173**
 
-http://localhost:5173
-
-Production build:
-
+**Production build:**
+```bash
 npm run build
+```
+Serve the `dist/` folder with Nginx (or any static server).
 
-Serve the dist folder using nginx or any static server.
+---
 
-Step 5 — Windows Endpoint Agent
+### 5) 🪪 Windows Endpoint Agent
 
-Install dependencies:
-
+```bash
+# Install dependencies
 pip install -r agent/requirements.txt
 
-Configure environment variables:
+# Configure environment variables
+export SENTINEL_BACKEND=http://192.168.1.100:8000
+export AGENT_NAME=WORKSTATION-ALICE
 
-SENTINEL_BACKEND=http://192.168.1.100:8000
-AGENT_NAME=WORKSTATION-ALICE
-
-Run agent:
-
+# Run agent
 python agent/agent.py
-Build Agent Executable
+```
 
-Install PyInstaller:
-
+**Build executable (PyInstaller):**
+```bash
 pip install pyinstaller
-
-Build executable:
-
 cd agent
 pyinstaller sentinel_agent.spec --clean
+```
+Output: `dist/SentinelAgent.exe`
 
-Output file:
+**Auto-start on Windows:**
+1. `Win + R` → `shell:startup`  
+2. Add a shortcut to `SentinelAgent.exe`
 
-dist/SentinelAgent.exe
-Windows Auto-Start
+> ⚠️ Run the agent with **administrator privileges** for full monitoring capabilities.
 
-Press Win + R
+---
 
-Type
+## 🔐 JWT Token System
 
-shell:startup
+SentinelAI uses **two token types**:
 
-Add shortcut to
+| Token Type | Subject | Expiry | Purpose |
+|---|---|---|---|
+| **User Token** | `username` | 60 minutes | Dashboard login |
+| **Agent Token** | `employee_id` | 30 days | Agent API access |
 
-SentinelAgent.exe
-JWT Token System
-
-SentinelAI uses two token types.
-
-Token Type	Subject	Expiry	Purpose
-User Token	username	60 minutes	Dashboard login
-Agent Token	employee_id	30 days	Agent API access
-
-Example agent token payload:
-
+**Example agent token payload:**
+```json
 {
   "sub": "42",
   "name": "WORKSTATION-01",
@@ -256,95 +272,103 @@ Example agent token payload:
   "exp": 1735689600,
   "iat": 1733097600
 }
+```
 
-Agents automatically re-register if their token expires.
+Agents automatically **re-register** if their token expires.
 
-RBAC Permissions
-Action	Admin	Analyst	Viewer
-View employees	Yes	Yes	Yes
-View alerts	Yes	Yes	Yes
-Resolve alerts	Yes	Yes	No
-Send warnings	Yes	Yes	No
-Disable USB	Yes	No	No
-Export reports	Yes	No	No
-Create users	Yes	No	No
-Risk Scoring System
-Violation Weights
-Event	Score
-USB Insertion	+40
-Bulk File Copy	+50
-Night Login	+20
-Unauthorized App	+50
-Keylogger Detection	+80
-Suspicious Port	+60
-Risk Levels
-Score	Level
-0–49	Low
-50–119	Medium
-120+	High
-Risk Decay
+---
 
-If no violations occur:
+## 🧾 RBAC Permissions
 
-Risk Score = Risk Score × 0.80 per day
+| Action | Admin | Analyst | Viewer |
+|---|---|---|---|
+| View employees | ✅ | ✅ | ✅ |
+| View alerts | ✅ | ✅ | ✅ |
+| Resolve alerts | ✅ | ✅ | ❌ |
+| Send warnings | ✅ | ✅ | ❌ |
+| Disable USB | ✅ | ❌ | ❌ |
+| Export reports | ✅ | ❌ | ❌ |
+| Create users | ✅ | ❌ | ❌ |
 
-Applied automatically by background scheduler.
+---
 
-Testing the System
+## 📊 Risk Scoring System
 
-Example test event:
+### Violation Weights
+| Event | Score |
+|---|---:|
+| USB Insertion | +40 |
+| Bulk File Copy | +50 |
+| Night Login | +20 |
+| Unauthorized App | +50 |
+| Keylogger Detection | +80 |
+| Suspicious Port | +60 |
 
+### Risk Levels
+| Score | Level |
+|---:|---|
+| 0–49 | Low |
+| 50–119 | Medium |
+| 120+ | High |
+
+### Risk Decay
+If no violations occur, **risk score = risk score × 0.80 per day** (applied by the background scheduler).
+
+---
+
+## 🧪 Testing the System
+
+**Submit a test event:**
+```bash
 curl -X POST http://localhost:8000/api/events/submit \
--H "Authorization: Bearer <AGENT_TOKEN>" \
--H "Content-Type: application/json" \
--d '{"event_type":"usb_insertion","metadata":{"drive":"E:\\"}}'
-Real-Time WebSocket
-WS /ws/events?token=<jwt>
+  -H "Authorization: Bearer <AGENT_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"event_type":"usb_insertion","metadata":{"drive":"E:\\"}}'
+```
 
-Events streamed:
+---
 
-risk_update
+## 🔴 Real-Time WebSocket
 
-warning_sent
+- **Endpoint:** `WS /ws/events?token=<jwt>`
+- **Streamed events:** `risk_update`, `warning_sent`, `pong`
 
-pong
+---
 
-Security Recommendations
+## 🔒 Security Recommendations (Production)
 
-Before production deployment:
+- Change **`JWT_SECRET_KEY`**
+- Change **PostgreSQL credentials**
+- Deploy behind **Nginx with HTTPS**
+- Use **App Passwords** for email alerts
+- Restrict **firewall access** to backend APIs
+- Ensure agents run with **administrator privileges**
 
-Change JWT_SECRET_KEY
+---
 
-Change PostgreSQL credentials
+## 🧯 Troubleshooting
 
-Deploy behind Nginx with HTTPS
+| Problem | Solution |
+|---|---|
+| Backend fails to start | Check PostgreSQL connection and `.env` configuration |
+| Agent receives `401` | Re-register agent token |
+| WebSocket disconnects | Verify CORS configuration |
+| USB disable not working | Run agent as administrator |
+| Email alerts missing | Verify SMTP settings |
+| Risk score not decaying | Ensure scheduler is running |
 
-Use App Passwords for email alerts
+---
 
-Restrict firewall access to backend APIs
+## 🤝 Contributing
 
-Ensure agents run with administrator privileges
+Contributions are welcome! Please open an issue or submit a pull request with clear descriptions, tests where applicable, and documentation updates.
 
-Troubleshooting
-Problem	Solution
-Backend fails to start	Check PostgreSQL connection
-Agent receives 401	Re-register agent token
-WebSocket disconnects	Verify CORS configuration
-USB disable not working	Run agent as administrator
-Email alerts missing	Verify SMTP settings
-Risk score not decaying	Ensure scheduler is running
-SentinelAI
+---
 
-Enterprise-grade insider threat detection platform designed for SOC teams and security engineers.
+## 📄 License
 
-Features:
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
 
-Real-time insider threat monitoring
+---
 
-Automated risk scoring
-
-Endpoint behavior analysis
-
-Real-time SOC dashboard
-
-Incident alerts and reporting
+**SentinelAI — Enterprise-grade insider threat detection platform built for SOC teams and security engineers.**
